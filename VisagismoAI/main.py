@@ -1,7 +1,9 @@
 import uuid
+from pathlib import Path
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from VisagismoAI.config import ALLOWED_MIME_TYPES, MAX_IMAGE_BYTES, MODEL_PATH, SEGMENTATION_MODEL_PATH
 from VisagismoAI.engines.face_geometry import analyze_face
@@ -73,3 +75,10 @@ async def analyze_front_photo(
 @app.delete("/api/v2/analyses/{analysis_id}")
 def delete_analysis(analysis_id: uuid.UUID) -> dict:
     return {"analysisId": str(analysis_id), "deleted": delete_encrypted_image(analysis_id)}
+
+
+# No ambiente publicado, frontend e API compartilham a mesma origem HTTPS.
+# O mount fica por ultimo para nao interceptar /health e /api/v2/*.
+WEB_DIR = Path(__file__).resolve().parent.parent / "VisagismoBarber"
+if WEB_DIR.exists():
+    app.mount("/", StaticFiles(directory=WEB_DIR, html=True), name="web")

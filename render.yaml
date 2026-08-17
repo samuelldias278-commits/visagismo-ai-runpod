@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: visagismo-ai-teste
+    runtime: docker
+    plan: free
+    dockerfilePath: ./render.Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.11
