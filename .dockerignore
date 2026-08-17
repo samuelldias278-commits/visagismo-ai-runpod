@@ -1,0 +1,9 @@
+*
+!VisagismoAI/
+!VisagismoAI/**
+!runpod_deploy/
+!runpod_deploy/**
+VisagismoAI/.secrets/
+VisagismoAI/storage/
+**/__pycache__/
+*.pyc

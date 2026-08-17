@@ -1,0 +1,35 @@
+// 20 referências técnicas: clássicos, sociais e modernos.
+const CUT_SOURCE='https://uk.braun.com/en-gb/male-grooming/hairstyling-for-men/hair-styling-modern-men';
+const ALL_FACES=['oval','redondo','quadrado','retangular','triangular','diamante'];
+const ALL_AGES=['18–25','26–35','36–45','46–60','60+'];
+const C=(id,nome,minTopo,texturas,densidade,rostos,manutencao,volume,lateral,estilos,idades,descricao,observacoes,entradas=['nenhuma','leves','moderadas'])=>({id,nome,minTopo,texturas,densidade,entradas,rostos,manutencao,volume,lateral,estilos,idades,descricao,observacoes,imagem:`assets/images/corte-${id}.svg`,referencia:CUT_SOURCE});
+window.CORTES=[
+C('buzz','Buzz Cut',0,['liso','ondulado','cacheado','crespo'],'baixa',['oval','quadrado','diamante'],'baixa','baixo','muito curta',['discreto','profissional','casual'],ALL_AGES,'Uniforme e muito curto.','Expõe a linha frontal e o formato craniano.',['nenhuma','leves','moderadas','acentuadas']),
+C('crew','Crew Cut',1,['liso','ondulado','cacheado'],'media',['oval','redondo','quadrado'],'baixa','medio','curta',['clássico','profissional','casual'],ALL_AGES,'Topo curto graduado.','Versátil e prático.'),
+C('french-crop','French Crop',1,['liso','ondulado','cacheado'],'baixa',['oval','redondo','retangular','triangular'],'baixa','baixo','curta',['moderno','discreto','casual'],['18–25','26–35','36–45','46–60'],'Franja curta à frente.','Pode suavizar entradas.',['nenhuma','leves','moderadas','acentuadas']),
+C('textured-crop','Textured Crop',2,['liso','ondulado','cacheado'],'media',['oval','redondo','quadrado','retangular'],'baixa','medio','curta',['moderno','marcante','casual'],['18–25','26–35','36–45','46–60'],'Topo curto texturizado.','Pede alguma densidade.'),
+C('caesar','Caesar',1,['liso','ondulado'],'baixa',['oval','quadrado','retangular'],'baixa','baixo','curta',['clássico','discreto'],ALL_AGES,'Franja horizontal curta.','Equilibra testa e entradas.',['nenhuma','leves','moderadas','acentuadas']),
+C('side-part','Side Part',2,['liso','ondulado'],'media',['oval','redondo','quadrado','triangular'],'media','medio','curta',['clássico','profissional'],['26–35','36–45','46–60','60+'],'Divisão lateral clássica.','Pede penteado regular.'),
+C('slick-back','Slick Back',3,['liso','ondulado'],'media',['oval','quadrado','triangular'],'alta','medio','media',['clássico','marcante','profissional'],['26–35','36–45','46–60'],'Topo penteado para trás.','Evidencia a linha frontal.', ['nenhuma','leves']),
+C('pompadour','Pompadour',3,['liso','ondulado'],'alta',['oval','redondo','quadrado'],'alta','alto','curta',['clássico','marcante'],['18–25','26–35','36–45','46–60'],'Volume frontal alto.','Exige densidade e modelagem.', ['nenhuma','leves']),
+C('quiff','Quiff',2,['liso','ondulado','cacheado'],'media',['oval','redondo','quadrado','triangular'],'alta','alto','curta',['moderno','marcante','casual'],['18–25','26–35','36–45'],'Volume frontal solto.','Requer modelagem.', ['nenhuma','leves']),
+C('low-taper','Low Taper',1,['liso','ondulado','cacheado','crespo'],'baixa',ALL_FACES,'media','medio','curta',['moderno','discreto','profissional','casual'],ALL_AGES,'Transição suave e baixa.','Preserva peso lateral.'),
+C('mid-fade','Mid Fade',1,['liso','ondulado','cacheado','crespo'],'media',['oval','redondo','quadrado'],'media','medio','muito curta',['moderno','marcante','casual'],['18–25','26–35','36–45'],'Degradê na altura média.','Contraste evidente.'),
+C('low-fade','Low Fade',1,['liso','ondulado','cacheado','crespo'],'media',['oval','redondo','quadrado','retangular','diamante'],'media','medio','muito curta',['moderno','profissional','casual'],['18–25','26–35','36–45','46–60'],'Degradê próximo à orelha.','Acabamento limpo.'),
+C('high-fade','High Fade',1,['liso','ondulado','cacheado','crespo'],'media',['oval','redondo','quadrado'],'alta','medio','muito curta',['moderno','marcante'],['18–25','26–35'],'Contraste alto.','Expõe mais o crânio.', ['nenhuma','leves']),
+C('taper-fade','Taper Fade',1,['liso','ondulado','cacheado','crespo'],'baixa',['oval','redondo','quadrado','triangular','diamante'],'media','medio','curta',['moderno','profissional','casual'],['18–25','26–35','36–45','46–60'],'Taper com acabamento em fade.','Adapta-se a muitos topos.'),
+C('ivy-league','Ivy League',2,['liso','ondulado'],'media',['oval','redondo','quadrado','triangular'],'media','medio','curta',['clássico','profissional','discreto'],['26–35','36–45','46–60','60+'],'Crew alongado e penteável.','Visual polido.'),
+C('undercut','Undercut',3,['liso','ondulado','cacheado'],'media',['oval','redondo','quadrado'],'alta','alto','muito curta',['moderno','marcante'],['18–25','26–35','36–45'],'Topo longo desconectado.','Contraste e manutenção altos.', ['nenhuma','leves']),
+C('mullet','Mullet Moderno',2,['liso','ondulado','cacheado','crespo'],'media',['oval','redondo','triangular','diamante'],'media','medio','media',['moderno','marcante','casual'],['18–25','26–35'],'Frente curta e nuca alongada.','Escolha expressiva.'),
+C('curly-top','Curly Top Fade',2,['cacheado','crespo'],'media',['oval','redondo','quadrado'],'media','alto','muito curta',['moderno','marcante','casual'],['18–25','26–35','36–45'],'Cachos no topo com fade.','Valoriza textura natural.'),
+C('bro-flow','Bro Flow',3,['liso','ondulado','cacheado'],'media',['oval','quadrado','triangular','diamante'],'media','medio','longa',['moderno','casual'],['18–25','26–35','36–45','46–60'],'Comprimento médio para trás.','Precisa de crescimento.', ['nenhuma','leves']),
+C('classic-scissor','Social na Tesoura',2,['liso','ondulado','cacheado'],'baixa',ALL_FACES,'media','medio','media',['clássico','discreto','profissional'],['26–35','36–45','46–60','60+'],'Construção clássica na tesoura.','Personalizável ao crânio e linha frontal.')
+];
+window.CORTES.forEach(x=>{x.imagem={src:`assets/images/corte-${x.id}.jpg`,origem:'gerada para o projeto'};x.referenciasTecnicas=['Milady Standard Barbering — fundamentos, taper e precisão','Pivot Point — estruturas e progressão de comprimentos','OpenTextBC — consulta, formato craniano e compensação de assimetrias'];x.modeloTecnico={
+ simetria:['side-part','slick-back','undercut'].includes(x.id)?'assimetria controlada pela direção e repartição':'simetria bilateral como base; compensar diferenças naturais do crânio',
+ forma:x.volume==='alto'?'forma vertical, com massa concentrada no topo':x.lateral==='muito curta'?'forma compacta, contraste entre topo e laterais':'forma equilibrada acompanhando a curvatura craniana',
+ peso:x.volume==='alto'?'peso frontal/superior':x.lateral==='longa'?'peso distribuído no perímetro':'peso controlado na crista parietal',
+ tecnica:x.lateral==='muito curta'?'máquina com linhas-guia, transição e acabamento; topo conforme textura':'tesoura sobre pente e/ou máquina; conexão graduada e acabamento',
+ elevacao:x.minTopo>=3?'elevação variável; preservar comprimento e movimento':x.volume==='baixo'?'baixa elevação e projeção controlada':'elevação aproximada de 45°–90°, ajustada à forma',
+ adaptacaoCraniana:'verificar occipital, crista parietal, redemoinhos, depressões e assimetria antes de definir altura e linhas-guia'
+};});

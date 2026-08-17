@@ -1,0 +1,13 @@
+{
+  "name": "visagismo-analise-v2",
+  "type": "QUEUE",
+  "computeType": "CPU",
+  "workersMin": 0,
+  "workersMax": 1,
+  "idleTimeoutSeconds": 5,
+  "executionTimeoutSeconds": 120,
+  "payloadRawImageLimitMb": 7,
+  "persistentVolume": false,
+  "storesClientImages": false,
+  "status": "PREPARED_NOT_DEPLOYED"
+}

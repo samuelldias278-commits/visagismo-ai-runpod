@@ -1,0 +1,7 @@
+fastapi[standard]
+cryptography
+mediapipe
+numpy
+onnxruntime==1.28.0
+opencv-contrib-python
+python-multipart
