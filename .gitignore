@@ -12,6 +12,7 @@ VisagismoAI/**/__pycache__/
 *.log
 temp-preview-iphone/
 temp-preview-server.js
+private-test-results/
 .env
 .env.*
 !.env.example
