@@ -40,7 +40,7 @@ def _generative_error(exc: Exception) -> tuple[int, str]:
     if status == 403 or name == "PermissionDeniedError":
         return 502, "A conta não possui acesso ao modelo de imagem. Verifique a organização e a habilitação do projeto na OpenAI."
     if status == 429 or name == "RateLimitError":
-        if "quota" in code or "billing" in code:
+        if any(marker in code for marker in ("quota", "billing", "credit", "balance")):
             return 402, "A conta da OpenAI está sem crédito ou sem cota de API disponível."
         return 429, "O limite temporário da API de imagens foi atingido. Aguarde e tente novamente."
     if status == 400 or name == "BadRequestError":
