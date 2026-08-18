@@ -2,11 +2,9 @@
 
 const filterEngine=(()=>{
  const filters=[
-  {id:'buzz',name:'Buzz Cut',src:'assets/filters/buzz-square-v2.png',width:1.58,y:-.02},
-  {id:'french-crop',name:'French Crop',src:'assets/filters/french-crop-square-v2.png',width:1.72,y:.015},
-  {id:'textured-crop',name:'Textured Crop',src:'assets/filters/textured-crop-square-v2.png',width:1.78,y:-.015},
-  {id:'side-part',name:'Side Part clássico',src:'assets/filters/side-part-square-v2.png',width:1.82,y:-.035},
-  {id:'low-fade',name:'Low Fade',src:'assets/filters/low-fade-square-v2.png',width:1.68,y:-.005},
+  {id:'crew',name:'Crew Cut',src:'assets/filters/crew-square-v1.png',width:1.74,y:-.025},
+  {id:'caesar',name:'Caesar',src:'assets/filters/caesar-square-v1.png',width:1.72,y:.005},
+  {id:'low-taper',name:'Low Taper',src:'assets/filters/low-taper-square-v1.png',width:1.76,y:-.025},
  ];
  const cache=new Map();
  function load(src){if(!cache.has(src))cache.set(src,new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>reject(new Error(`Não foi possível abrir ${src}`));img.src=src}));return cache.get(src)}
@@ -32,8 +30,9 @@ const filterEngine=(()=>{
   const foreheadY=forehead?forehead.y*canvas.height:canvas.height*.28;
   const coverage=Number(hairMetrics?.visibleHairCoverage||0),severity=({leves:.045,moderadas:.1,acentuadas:.16})[receding]||0;
   const safeScaleMax=severity>=.16?1.03:severity>=.1?1.09:coverage&&coverage<.02?1.08:1.2;
-  const requestedScale=Number(scale),effectiveScale=realism==='livre'?clamp(requestedScale,.7,1.3):clamp(requestedScale,.78,safeScaleMax);
-  const width=templeWidth*filter.width*effectiveScale,height=width*(overlay.naturalHeight/overlay.naturalWidth);
+  const requestedScale=Number(scale),minimumScale=realism==='conservador'?1:realism==='equilibrado'?.9:.7,effectiveScale=clamp(requestedScale,minimumScale,realism==='livre'?1.3:safeScaleMax);
+  const requestedWidth=templeWidth*filter.width*effectiveScale,cranialWidthFloor=templeWidth*1.68;
+  const width=realism==='conservador'?Math.max(requestedWidth,cranialWidthFloor):requestedWidth,height=width*(overlay.naturalHeight/overlay.naturalWidth);
   const x=centerX-width/2,y=foreheadY-height*.48+canvas.height*(filter.y+Number(offsetY));
   const rawAsymmetry=left&&right&&forehead?(forehead.x-(left.x+right.x)/2)/Math.max(.001,Math.abs(right.x-left.x)):0;
   const correction=Math.max(-.12,Math.min(.12,rawAsymmetry))*Number(asymmetryCorrection);
@@ -51,8 +50,8 @@ const filterEngine=(()=>{
   }
   if(biologicalMask&&Number(originalTexture)>0){const detail=document.createElement('canvas');detail.width=canvas.width;detail.height=canvas.height;const dctx=detail.getContext('2d');dctx.drawImage(photo,0,0);dctx.globalCompositeOperation='destination-in';dctx.drawImage(biologicalMask,0,0,canvas.width,canvas.height);lctx.save();lctx.globalCompositeOperation='soft-light';lctx.globalAlpha=clamp(originalTexture,0,.45);lctx.drawImage(detail,0,0);lctx.restore()}
   ctx.drawImage(layer,0,0);
-  return{filterId:filter.id,requestedScale,effectiveScale,scaleLimited:effectiveScale!==requestedScale,safeScaleMax,offsetY:Number(offsetY),opacity:Number(opacity),realism,preserveColor:Boolean(preserveColor),sampledHairColor:hairColor,feather:Number(feather),originalTexture:Number(originalTexture),asymmetryCorrection:Number(asymmetryCorrection),detectedAsymmetry:Math.round(rawAsymmetry*1000)/1000,recedingPreserved:receding,biologicalMaskApplied:Boolean(allowedHairMaskDataUrl),mode:anchors?'adaptive-mediapipe':'central-fallback'};
+  return{filterId:filter.id,requestedScale,effectiveScale,scaleLimited:effectiveScale!==requestedScale,safeScaleMax,minimumScale,cranialWidthFloor:Math.round(cranialWidthFloor),renderedHairWidth:Math.round(width),cranialDimensionsPreserved:realism==='conservador',offsetY:Number(offsetY),opacity:Number(opacity),realism,preserveColor:Boolean(preserveColor),sampledHairColor:hairColor,feather:Number(feather),originalTexture:Number(originalTexture),asymmetryCorrection:Number(asymmetryCorrection),detectedAsymmetry:Math.round(rawAsymmetry*1000)/1000,recedingPreserved:receding,biologicalMaskApplied:Boolean(allowedHairMaskDataUrl),mode:anchors?'adaptive-mediapipe':'central-fallback'};
  }
  function download(canvas,name='simulacao-visagismo.png'){const a=document.createElement('a');a.download=name;a.href=canvas.toDataURL('image/png');a.click()}
- return{status:'ADAPTIVE_2D',version:'2.1.0',filters,render,download};
+ return{status:'ADAPTIVE_2D',version:'2.2.0',filters,render,download};
 })();
