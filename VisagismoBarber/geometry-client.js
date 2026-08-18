@@ -29,4 +29,19 @@ window.geometryClient = {
   analyzeFront(options) {
     return this.analyzeView({ ...options, position: 'Foto frontal' });
   },
+
+  async generateHairstyle({ dataUrl, hairstyleId, consentId, accessCode }) {
+    const imageResponse = await fetch(dataUrl);
+    const blob = await imageResponse.blob();
+    const form = new FormData();
+    form.append('photo', blob, 'cliente-frontal.jpg');
+    form.append('hairstyle_id', hairstyleId);
+    form.append('consent_id', consentId);
+    form.append('generative_consent', 'true');
+    form.append('access_code', accessCode);
+    const response = await fetch(`${this.apiBase()}/api/v2/generate/hairstyle`, { method: 'POST', body: form });
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(body.detail || `Falha HTTP ${response.status}`);
+    return body;
+  },
 };

@@ -1,3 +1,5 @@
+import hmac
+import os
 import secrets
 import time
 import uuid
@@ -11,6 +13,7 @@ from fastapi.staticfiles import StaticFiles
 
 from VisagismoAI.config import ALLOWED_MIME_TYPES, MAX_IMAGE_BYTES, MODEL_PATH, SEGMENTATION_MODEL_PATH
 from VisagismoAI.engines.face_geometry import analyze_face
+from VisagismoAI.engines.generative_hairstyle import HAIRSTYLES, generate_hairstyle, is_configured
 from VisagismoAI.engines.hair_segmentation import analyze_hair
 from VisagismoAI.engines.quality_engine import assess_quality, decode_and_sanitize
 from VisagismoAI.security.encryption import delete_encrypted_image, encrypt_and_store
@@ -71,6 +74,7 @@ def health() -> dict:
         "version": app.version,
         "faceLandmarkerModel": MODEL_PATH.exists(),
         "hairSegmentationModel": SEGMENTATION_MODEL_PATH.exists(),
+        "generativeImageConfigured": is_configured(),
     }
 
 
@@ -137,6 +141,36 @@ def delete_capture_session(session_id: str) -> dict:
     with capture_sessions_lock:
         deleted = capture_sessions.pop(session_id, None) is not None
     return {"sessionId": session_id, "deleted": deleted}
+
+
+@app.post("/api/v2/generate/hairstyle")
+async def generate_realistic_hairstyle(
+    photo: UploadFile = File(...),
+    hairstyle_id: str = Form(...),
+    consent_id: str = Form(...),
+    generative_consent: bool = Form(...),
+    access_code: str = Form(...),
+) -> dict:
+    if not is_configured():
+        raise HTTPException(503, "A geração realista ainda não foi configurada no servidor.")
+    expected_code = os.environ["GENERATIVE_ACCESS_CODE"]
+    if not hmac.compare_digest(access_code, expected_code):
+        raise HTTPException(403, "Código de geração inválido.")
+    if not generative_consent or not consent_id.strip():
+        raise HTTPException(400, "É necessário consentimento específico para a geração externa.")
+    if hairstyle_id not in HAIRSTYLES:
+        raise HTTPException(400, "Modelo de corte não permitido.")
+    if photo.content_type not in ALLOWED_MIME_TYPES:
+        raise HTTPException(415, "Formato não permitido. Use JPEG, PNG ou WebP.")
+    data = await photo.read(MAX_IMAGE_BYTES + 1)
+    if len(data) > MAX_IMAGE_BYTES:
+        raise HTTPException(413, "A imagem excede o limite de 10 MB.")
+    try:
+        return await generate_hairstyle(data, hairstyle_id)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(502, "O provedor generativo não concluiu a simulação.") from exc
 
 
 @app.post("/api/v2/analyze/front")
