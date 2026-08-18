@@ -1,4 +1,5 @@
 import hmac
+import logging
 import os
 import secrets
 import time
@@ -17,6 +18,36 @@ from VisagismoAI.engines.generative_hairstyle import HAIRSTYLES, generate_hairst
 from VisagismoAI.engines.hair_segmentation import analyze_hair
 from VisagismoAI.engines.quality_engine import assess_quality, decode_and_sanitize
 from VisagismoAI.security.encryption import delete_encrypted_image, encrypt_and_store
+
+logger = logging.getLogger("visagismo.generative")
+
+
+def _generative_error(exc: Exception) -> tuple[int, str]:
+    """Converte falhas do provedor em mensagens uteis sem expor credenciais."""
+    status = getattr(exc, "status_code", None)
+    code = getattr(exc, "code", None)
+    body = getattr(exc, "body", None)
+    if isinstance(body, dict):
+        code = code or body.get("code")
+        nested = body.get("error")
+        if isinstance(nested, dict):
+            code = code or nested.get("code")
+    code = str(code or "").casefold()
+    name = type(exc).__name__
+    logger.warning("Falha generativa: tipo=%s status=%s codigo=%s", name, status, code or "indisponivel")
+    if status == 401 or name == "AuthenticationError":
+        return 502, "A chave da OpenAI foi recusada. Revise OPENAI_API_KEY no Render."
+    if status == 403 or name == "PermissionDeniedError":
+        return 502, "A conta não possui acesso ao modelo de imagem. Verifique a organização e a habilitação do projeto na OpenAI."
+    if status == 429 or name == "RateLimitError":
+        if "quota" in code or "billing" in code:
+            return 402, "A conta da OpenAI está sem crédito ou sem cota de API disponível."
+        return 429, "O limite temporário da API de imagens foi atingido. Aguarde e tente novamente."
+    if status == 400 or name == "BadRequestError":
+        return 422, "A OpenAI recusou a solicitação de imagem. Verifique acesso ao GPT Image e a configuração da conta."
+    if name in {"APIConnectionError", "APITimeoutError"}:
+        return 503, "A conexão com a OpenAI falhou temporariamente. Tente novamente em alguns minutos."
+    return 502, "O provedor generativo não concluiu a simulação."
 
 app = FastAPI(title="Visagismo AI", version="2.0.0-dev")
 app.add_middleware(
@@ -170,7 +201,8 @@ async def generate_realistic_hairstyle(
     except ValueError as exc:
         raise HTTPException(422, str(exc)) from exc
     except Exception as exc:
-        raise HTTPException(502, "O provedor generativo não concluiu a simulação.") from exc
+        status_code, detail = _generative_error(exc)
+        raise HTTPException(status_code, detail) from exc
 
 
 @app.post("/api/v2/analyze/front")
