@@ -1,8 +1,13 @@
 *
 !VisagismoAI/
 !VisagismoAI/**
+!VisagismoBarber/
+!VisagismoBarber/**
 !runpod_deploy/
 !runpod_deploy/**
+!render.Dockerfile
+!render-requirements.txt
+!render.yaml
 VisagismoAI/.secrets/
 VisagismoAI/storage/
 **/__pycache__/
