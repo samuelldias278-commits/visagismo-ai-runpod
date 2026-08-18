@@ -192,7 +192,20 @@ async def analyze_front_photo(
         image, sanitized = decode_and_sanitize(data)
         quality = assess_quality(image)
         geometry = analyze_face(image)
-        hair_analysis = analyze_hair(image, geometry)
+        # A mascara capilar de alta resolucao e necessaria apenas na vista
+        # frontal, que alimenta o filtro. Executar o modelo ONNX nas sete
+        # vistas retinha muita memoria no plano gratuito e podia reiniciar o
+        # processo antes do fim da analise multivista.
+        if view_label.strip().casefold() == "foto frontal":
+            hair_analysis = analyze_hair(image, geometry)
+        else:
+            hair_analysis = {
+                "detected": False,
+                "skipped": True,
+                "reason": "Segmentacao capilar reservada para a foto frontal.",
+                "usableForFilter": False,
+                "warnings": [],
+            }
     except FileNotFoundError as exc:
         raise HTTPException(503, str(exc)) from exc
     except ValueError as exc:
